@@ -1,57 +1,106 @@
+"use client"
+
 import Image from "next/image"
-import { projects } from "@/lib/data"
+import { dict } from "@/lib/data"
+import { motion, Variants } from "framer-motion"
+import { ExternalLink } from "lucide-react"
+import { useLanguage } from "./LanguageContext"
 
 export default function Projects() {
-  return (
-    <section id="projects" className="py-24 px-[5%]" style={{ background: "white", borderTop: "1px solid #E5E2DB" }}>
-      <div className="max-w-5xl mx-auto">
-        <p className="text-xs font-medium text-accent tracking-widest uppercase mb-2">Portfolio</p>
-        <h2 className="text-text-primary font-semibold mb-3" style={{ fontSize: "clamp(1.8rem, 3vw, 2.4rem)", letterSpacing: "-0.02em" }}>
-          Project
-        </h2>
-        <p className="text-text-secondary font-light mb-12 text-sm max-w-md">
-          Beberapa project yang pernah saya kerjakan — dari aplikasi skala besar hingga landing page.
-        </p>
+  const { language } = useLanguage()
+  const content = dict[language]
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {projects.map((project, i) => (
-            <div key={i} className="card-hover group rounded-2xl overflow-hidden bg-white flex flex-col"
-              style={{ border: "1.5px solid #E5E2DB" }}>
-              <div className="relative overflow-hidden" style={{ aspectRatio: "16/9" }}>
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.2 }
+    }
+  }
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  }
+
+  return (
+    <section id="projects" className="py-24 px-[5%] bg-primary-dark border-t border-border-dark relative">
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[150px] pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+        >
+          <p className="text-xs font-bold text-accent tracking-widest uppercase mb-3 flex items-center gap-2">
+            <span className="w-8 h-px bg-accent" /> {content.projects_section.title}
+          </p>
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground tracking-tight">
+            {content.projects_section.heading}
+          </h2>
+          <p className="text-text-muted mb-16 text-base max-w-lg">
+            {content.projects_section.desc}
+          </p>
+        </motion.div>
+
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {content.projects.map((project, i) => (
+            <motion.div 
+              key={i} 
+              variants={itemVariants}
+              className="group rounded-2xl overflow-hidden bg-background border border-border-dark flex flex-col transition-all duration-300 hover:-translate-y-2 hover:border-accent/50 hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] relative"
+            >
+              <div className="relative overflow-hidden" style={{ aspectRatio: "16/10" }}>
                 <Image
                   src={project.image}
                   alt={project.title}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{ background: "linear-gradient(to bottom, transparent, rgba(37,99,235,0.3))" }} />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent opacity-90" />
               </div>
-              <div className="p-5 flex flex-col flex-1">
-                <h3 className="font-semibold text-text-primary text-sm mb-2 leading-snug group-hover:text-accent transition-colors">
+              
+              <div className="p-6 flex flex-col flex-1 relative z-10 -mt-8">
+                <h3 className="font-bold text-lg mb-2 text-foreground group-hover:text-accent transition-colors">
                   {project.title}
                 </h3>
-                <p className="text-text-secondary text-xs font-light leading-relaxed mb-4 flex-1">{project.desc}</p>
-                <div className="flex flex-wrap gap-1.5 mb-4">
+                <p className="text-text-muted text-sm leading-relaxed mb-6 flex-1">
+                  {project.desc}
+                </p>
+                
+                <div className="flex flex-wrap gap-2 mb-6">
                   {project.tags.map(tag => (
-                    <span key={tag} className="text-xs px-2.5 py-1 rounded-lg text-accent font-medium"
-                      style={{ background: "#EFF6FF", border: "1px solid #BFDBFE" }}>
+                    <span key={tag} className="text-xs px-3 py-1 rounded-full text-accent bg-accent/10 border border-accent/20">
                       {tag}
                     </span>
                   ))}
                 </div>
-                {project.link ? (
-                  <a href={project.link} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-accent hover:gap-2 transition-all">
-                    Lihat Demo <span>→</span>
-                  </a>
-                ) : (
-                  <span className="text-xs text-text-muted">Internal Project</span>
-                )}
+                
+                <div className="mt-auto">
+                  {project.link ? (
+                    <a href={project.link} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-accent transition-colors group/link">
+                      {content.projects_section.demo} 
+                      <ExternalLink size={14} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+                    </a>
+                  ) : (
+                    <span className="inline-flex items-center gap-2 text-sm text-text-muted">
+                      <span className="w-2 h-2 rounded-full bg-border-dark" /> {content.projects_section.internal}
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )

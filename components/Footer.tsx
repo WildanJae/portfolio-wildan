@@ -1,15 +1,22 @@
-import { profile } from "@/lib/data"
+"use client"
+
+import { dict } from "@/lib/data"
+import { useLanguage } from "./LanguageContext"
 
 export default function Footer() {
+  const { language } = useLanguage()
+  const content = dict[language]
+
   return (
-    <footer className="py-8 px-[5%]" style={{ background: "white", borderTop: "1px solid #E5E2DB" }}>
-      <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
-        <span className="font-semibold text-text-primary">{profile.name.split(" ")[0]}<span className="text-accent">.</span></span>
-        <p className="text-xs text-text-muted">© {new Date().getFullYear()} {profile.name} · Bandung</p>
-        <a href={profile.linkedin} target="_blank" rel="noopener noreferrer"
-          className="text-xs text-text-muted hover:text-accent transition-colors">
-          LinkedIn
-        </a>
+    <footer className="py-12 px-[5%] bg-primary-dark border-t border-border-dark text-center">
+      <div className="max-w-5xl mx-auto flex flex-col items-center">
+        <span className="font-bold text-2xl tracking-tighter text-foreground mb-4">
+          {content.profile.name.split(" ")[0]}
+          <span className="text-accent">.</span>
+        </span>
+        <p className="text-text-muted text-sm font-medium mb-1">
+          © {new Date().getFullYear()} {content.profile.name}.
+        </p>
       </div>
     </footer>
   )

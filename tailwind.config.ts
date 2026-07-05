@@ -5,17 +5,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        "off-white": "#F8F7F4",
-        "soft-gray": "#F0EEE9",
-        "border-gray": "#E5E2DB",
-        "text-primary": "#111111",
-        "text-secondary": "#666666",
-        "text-muted": "#999999",
-        accent: "#2563EB",
-        "accent-light": "#EFF6FF",
-      },
-      fontFamily: {
-        inter: ["Inter", "sans-serif"],
+        background: "#09090b", // zinc-950
+        foreground: "#fafafa", // zinc-50
+        "primary-dark": "#18181b", // zinc-900
+        "border-dark": "#27272a", // zinc-800
+        accent: "#3b82f6", // blue-500
+        "text-muted": "#a1a1aa", // zinc-400
       },
     },
   },
