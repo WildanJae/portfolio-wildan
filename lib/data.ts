@@ -133,7 +133,13 @@ export const dict = {
       fluppy_title: "Fluppy Wil",
       fluppy_desc: "Bantu Wildan terbang melewati pipa rintangan!",
       start: "Mulai Game",
-      gameover: "Yah nabrak! 💥"
+      gameover: "Yah nabrak! 💥",
+      love_title: "Love Animation",
+      love_desc: "Animasi bentuk hati dengan partikel teks 'i love you'.",
+      cryptarithm_title: "Cryptarithm",
+      cryptarithm_desc: "Pecahkan teka-teki logika matematika rahasia!",
+      sudoku_title: "Sudoku",
+      sudoku_desc: "Latih logikamu dengan teka-teki kotak 9x9 klasik."
     }
   },
   en: {
@@ -270,7 +276,13 @@ export const dict = {
       fluppy_title: "Fluppy Wil",
       fluppy_desc: "Help Wildan fly through the obstacle pipes!",
       start: "Start Game",
-      gameover: "Ouch! Crashed! 💥"
+      gameover: "Ouch! Crashed! 💥",
+      love_title: "Love Animation",
+      love_desc: "Heart shape animation with 'i love you' text particles.",
+      cryptarithm_title: "Cryptarithm",
+      cryptarithm_desc: "Solve secret mathematical logic puzzles!",
+      sudoku_title: "Sudoku",
+      sudoku_desc: "Train your logic with the classic 9x9 grid puzzle."
     }
   }
 }

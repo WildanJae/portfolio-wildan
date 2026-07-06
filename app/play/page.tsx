@@ -4,7 +4,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { dict } from "@/lib/data"
 import { useLanguage } from "@/components/LanguageContext"
-import { ArrowLeft, LayoutGrid, Hash, Bird } from "lucide-react"
+import { ArrowLeft, LayoutGrid, Hash, Bird, Heart, BrainCircuit, Grid3X3 } from "lucide-react"
 import LanguageSwitcher from "@/components/LanguageSwitcher"
 
 export default function GameHub() {
@@ -35,6 +35,30 @@ export default function GameHub() {
       href: "/play/flappy",
       color: "from-yellow-500/20 to-yellow-500/5",
       border: "hover:border-yellow-500/50"
+    },
+    {
+      title: content.love_title,
+      desc: content.love_desc,
+      icon: <Heart size={48} className="text-red-400" />,
+      href: "/play/love",
+      color: "from-red-500/20 to-red-500/5",
+      border: "hover:border-red-500/50"
+    },
+    {
+      title: content.cryptarithm_title,
+      desc: content.cryptarithm_desc,
+      icon: <BrainCircuit size={48} className="text-purple-400" />,
+      href: "/play/cryptarithm",
+      color: "from-purple-500/20 to-purple-500/5",
+      border: "hover:border-purple-500/50"
+    },
+    {
+      title: content.sudoku_title,
+      desc: content.sudoku_desc,
+      icon: <Grid3X3 size={48} className="text-indigo-400" />,
+      href: "/play/sudoku",
+      color: "from-indigo-500/20 to-indigo-500/5",
+      border: "hover:border-indigo-500/50"
     }
   ]
 

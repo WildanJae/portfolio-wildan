@@ -9,9 +9,9 @@ const GAME_WIDTH = 800
 const GAME_HEIGHT = 600
 const GRAVITY = 0.6
 const JUMP_STRENGTH = -10
-const PIPE_SPEED = 5 // Constant speed forever (Classic Flappy)
+const PIPE_SPEED = 5
 const PIPE_WIDTH = 80
-const PIPE_GAP = 160 // Constant gap forever (Classic Flappy)
+const PIPE_GAP = 160
 const BIRD_SIZE = 50
 
 type Pipe = {
@@ -23,9 +23,8 @@ type Pipe = {
   gapOffset: number
 }
 
-// 5 Unique Themes with Hitbox-Accurate Clip Paths (Sides remain straight)
 const THEMES = [
-  { // Level 0: Classic Green
+  {
     sky: "bg-blue-900/30",
     floor: "bg-emerald-900/50 border-emerald-500/30",
     pipeStart: "from-emerald-400",
@@ -34,7 +33,7 @@ const THEMES = [
     clipPathTop: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
     clipPathBottom: "polygon(0 0, 100% 0, 100% 100%, 0 100%)"
   },
-  { // Level 1: Cyberpunk Neon (Pointy Arrows)
+  {
     sky: "bg-fuchsia-900/40",
     floor: "bg-purple-900/60 border-fuchsia-500/50",
     pipeStart: "from-fuchsia-500",
@@ -43,7 +42,7 @@ const THEMES = [
     clipPathTop: "polygon(0 0, 100% 0, 100% 90%, 50% 100%, 0 90%)",
     clipPathBottom: "polygon(50% 0, 100% 10%, 100% 100%, 0 100%, 0 10%)"
   },
-  { // Level 2: Lava Hell (Fangs/Monster Teeth)
+  {
     sky: "bg-red-950/80",
     floor: "bg-orange-950 border-orange-500/60",
     pipeStart: "from-orange-500",
@@ -52,7 +51,7 @@ const THEMES = [
     clipPathTop: "polygon(0 0, 100% 0, 100% 80%, 75% 100%, 50% 70%, 25% 100%, 0 80%)",
     clipPathBottom: "polygon(25% 0, 50% 30%, 75% 0, 100% 20%, 100% 100%, 0 100%, 0 20%)"
   },
-  { // Level 3: Frozen Ice (Jagged Crystals)
+  {
     sky: "bg-cyan-900/50",
     floor: "bg-sky-900/50 border-cyan-300/40",
     pipeStart: "from-cyan-300",
@@ -61,7 +60,7 @@ const THEMES = [
     clipPathTop: "polygon(0 0, 100% 0, 100% 100%, 80% 90%, 60% 100%, 40% 85%, 20% 95%, 0 100%)",
     clipPathBottom: "polygon(0 0, 20% 10%, 40% 0, 60% 15%, 80% 0, 100% 5%, 100% 100%, 0 100%)"
   },
-  { // Level 4+: The Void (Alien Tech / Beveled)
+  {
     sky: "bg-black",
     floor: "bg-gray-900 border-yellow-500/20",
     pipeStart: "from-purple-600",
@@ -101,7 +100,6 @@ export default function FlappyBird() {
     }
   }, [gameState])
 
-  // Auto-Play Bot Logic (AI)
   useEffect(() => {
     if (!autoPlay || gameState !== "playing") return;
 
@@ -109,7 +107,6 @@ export default function FlappyBird() {
     const nextPipe = pipes.find(p => p.x + PIPE_WIDTH > birdLeft);
 
     if (nextPipe) {
-      // Target the middle of the gap
       const targetY = nextPipe.topHeight + (PIPE_GAP / 2) - (BIRD_SIZE / 2);
       
       if (birdPos > targetY && birdVelocity >= 0) {
@@ -122,7 +119,6 @@ export default function FlappyBird() {
     }
   }, [birdPos, pipes, autoPlay, gameState, jump, birdVelocity]);
 
-  // Fix: Independent timer for Level Up UI (not interrupted by rapid score changes)
   useEffect(() => {
     if (showLevelUp) {
       const timer = setTimeout(() => setShowLevelUp(false), 800)
@@ -130,7 +126,6 @@ export default function FlappyBird() {
     }
   }, [showLevelUp])
 
-  // Safely update score and knockback Chaser
   useEffect(() => {
     pipes.forEach(p => {
       if (p.passed && !scoredPipes.current.has(p.id)) {
@@ -140,7 +135,6 @@ export default function FlappyBird() {
           if (newScore > 0 && newScore % 10 === 0) setShowLevelUp(true);
           return newScore;
         })
-        // Knockback the Chaser by 150px!
         setChaserX(prev => Math.max(-200, prev - 150))
       }
     })
@@ -157,7 +151,6 @@ export default function FlappyBird() {
     setGameState("start")
   }
 
-  // Handle Input Keyboard
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Space") {
@@ -170,12 +163,10 @@ export default function FlappyBird() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [jump, autoPlay])
 
-  // Game Loop
   useEffect(() => {
     if (gameState !== "playing") return
 
     const gameLoop = setInterval(() => {
-      // 1. Update Bird
       setBirdPos((pos) => {
         const newPos = pos + birdVelocity
         if (newPos >= GAME_HEIGHT - BIRD_SIZE) {
@@ -187,31 +178,25 @@ export default function FlappyBird() {
       })
       setBirdVelocity((v) => v + GRAVITY)
 
-      // 1.5 Update Chaser (The Monster creeping in)
       setChaserX((prev) => {
         const birdLeft = GAME_WIDTH / 2 - BIRD_SIZE / 2;
         if (prev >= birdLeft) {
-          if (!autoPlay) setGameState("gameover") // Eaten by Chaser!
+          if (!autoPlay) setGameState("gameover")
           return birdLeft;
         }
-        // Base creep speed + scales with level
         return prev + 1 + (level * 0.3)
       })
 
-      // 2. Update Pipes
       setPipes((prevPipes) => {
         let newPipes = prevPipes.map((p) => {
           let newX = p.x - PIPE_SPEED
           let newGapOffset = p.gapOffset
 
-          // Crusher logic: Snap open when bird is near!
           if (p.isCrusher) {
             const distance = newX - (GAME_WIDTH / 2 - BIRD_SIZE / 2);
             if (distance < 300 && distance > -PIPE_WIDTH) {
-              // Rapidly open (offset goes to 0)
               newGapOffset = Math.max(0, newGapOffset - 15);
             } else if (distance >= 300) {
-              // Stay closed
               newGapOffset = PIPE_GAP / 2;
             }
           }
@@ -219,18 +204,15 @@ export default function FlappyBird() {
           return { ...p, x: newX, gapOffset: newGapOffset }
         })
 
-        // Remove off-screen pipes
         if (newPipes.length > 0 && newPipes[0].x < -PIPE_WIDTH) {
           newPipes.shift()
         }
 
-        // Add new pipes
         if (newPipes.length === 0 || newPipes[newPipes.length - 1].x < GAME_WIDTH - 300) {
           const minPipeHeight = 50
           const maxPipeHeight = GAME_HEIGHT - PIPE_GAP - minPipeHeight
           const topHeight = Math.floor(Math.random() * (maxPipeHeight - minPipeHeight + 1)) + minPipeHeight
           
-          // Starting from level 1, 40% chance to spawn a Crusher
           const isCrusher = level >= 1 && Math.random() > 0.6;
 
           newPipes.push({ 
@@ -239,11 +221,10 @@ export default function FlappyBird() {
             topHeight, 
             passed: false,
             isCrusher,
-            gapOffset: isCrusher ? PIPE_GAP / 2 : 0 // Starts fully closed if crusher
+            gapOffset: isCrusher ? PIPE_GAP / 2 : 0
           })
         }
 
-        // Mark passed pipes
         newPipes = newPipes.map(p => {
           if (!p.passed && p.x + PIPE_WIDTH < GAME_WIDTH / 2 - BIRD_SIZE / 2) {
             return { ...p, passed: true }
@@ -259,7 +240,6 @@ export default function FlappyBird() {
     return () => clearInterval(gameLoop)
   }, [gameState, birdVelocity, autoPlay, level])
 
-  // Collision Detection
   useEffect(() => {
     if (gameState !== "playing" || autoPlay) return 
 
@@ -272,7 +252,6 @@ export default function FlappyBird() {
       const pipeLeft = pipe.x
       const pipeRight = pipe.x + PIPE_WIDTH
       
-      // Calculate true gap bounds based on crusher state
       const topPipeBottom = pipe.topHeight + pipe.gapOffset
       const bottomPipeTop = pipe.topHeight + PIPE_GAP - pipe.gapOffset
 
@@ -293,17 +272,17 @@ export default function FlappyBird() {
         <p className="text-text-muted">{content.fluppy_desc}</p>
       </div>
 
-      {/* Responsive Container Wrapper */}
+      
       <div 
         className="w-full max-w-4xl mx-auto overflow-hidden rounded-3xl shadow-2xl border-4 border-border-dark bg-primary-dark cursor-pointer touch-none relative transition-colors duration-1000"
         style={{ aspectRatio: `${GAME_WIDTH}/${GAME_HEIGHT}` }}
         onClick={jump}
       >
-        {/* Sky/Background Decor */}
+        
         <div className={`absolute inset-0 transition-colors duration-1000 ${currentTheme.sky}`} />
         <div className={`absolute bottom-0 w-full h-[10%] border-t-4 transition-colors duration-1000 ${currentTheme.floor}`} />
 
-        {/* Level Up Notification */}
+        
         {showLevelUp && (
           <motion.div 
             initial={{ scale: 0.5, opacity: 0 }}
@@ -317,7 +296,7 @@ export default function FlappyBird() {
           </motion.div>
         )}
 
-        {/* The Chaser (Dark Monster) */}
+        
         <div 
           className="absolute top-0 bottom-0 z-30 pointer-events-none transition-transform duration-75"
           style={{ 
@@ -334,7 +313,7 @@ export default function FlappyBird() {
           </svg>
         </div>
 
-        {/* Bird Wrapper (Position & Rotation) */}
+        
         <motion.div
           className="absolute z-20 flex items-center justify-center"
           style={{ 
@@ -346,14 +325,14 @@ export default function FlappyBird() {
           }}
           transition={{ duration: 0 }}
         >
-          {/* Left Wing */}
+          
           <motion.div 
             className="absolute -left-[40%] top-[40%] w-[50%] h-[30%] bg-white rounded-l-full rounded-r-md shadow-sm border border-gray-200 z-10"
             style={{ transformOrigin: "right center" }}
             animate={{ rotate: birdVelocity < 0 ? -50 : 30 }}
             transition={{ type: "spring", stiffness: 300, damping: 10 }}
           />
-          {/* The Face */}
+          
           <div className={`w-full h-full rounded-full border-2 overflow-hidden shadow-lg bg-border-dark relative z-20 ${currentTheme.pipeBorder}`}>
             <img 
               src={photo} 
@@ -362,7 +341,7 @@ export default function FlappyBird() {
               draggable={false}
             />
           </div>
-          {/* Right Wing */}
+          
           <motion.div 
             className="absolute -right-[40%] top-[40%] w-[50%] h-[30%] bg-white rounded-r-full rounded-l-md shadow-sm border border-gray-200 z-10"
             style={{ transformOrigin: "left center" }}
@@ -371,11 +350,11 @@ export default function FlappyBird() {
           />
         </motion.div>
 
-        {/* Pipes */}
+        
         {pipes.map((pipe, i) => {
           return (
             <div key={i}>
-              {/* Top Pipe */}
+              
               <div 
                 className={`absolute top-0 bg-gradient-to-b ${currentTheme.pipeStart} ${currentTheme.pipeEnd} transition-colors duration-1000 ${pipe.isCrusher ? 'shadow-[0_0_20px_rgba(255,0,0,0.8)]' : ''}`}
                 style={{
@@ -388,7 +367,7 @@ export default function FlappyBird() {
                 {pipe.isCrusher && <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(255,0,0,0.3)_10px,rgba(255,0,0,0.3)_20px)]" />}
               </div>
               
-              {/* Bottom Pipe */}
+              
               <div 
                 className={`absolute bottom-0 bg-gradient-to-t ${currentTheme.pipeStart} ${currentTheme.pipeEnd} transition-colors duration-1000 ${pipe.isCrusher ? 'shadow-[0_0_20px_rgba(255,0,0,0.8)]' : ''}`}
                 style={{
@@ -404,16 +383,16 @@ export default function FlappyBird() {
           )
         })}
 
-        {/* UI Overlay */}
+        
         <div className="absolute top-[5%] w-full text-center z-30 pointer-events-none">
           <span className="text-4xl md:text-6xl font-black text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
             {score}
           </span>
         </div>
 
-        {/* Developer Buttons (Cheat/Testing) */}
+        
         <div className="absolute top-4 right-4 z-50 flex gap-3">
-          {/* Skip Level Button */}
+          
           <button 
             onClick={(e) => {
               e.stopPropagation();
@@ -424,13 +403,13 @@ export default function FlappyBird() {
             ⏭️ +10 Skor (Skip Level)
           </button>
 
-          {/* Developer Auto-Play Button */}
+          
           <button 
             onClick={(e) => {
               e.stopPropagation();
               setAutoPlay(prev => !prev);
               if (!autoPlay && gameState === "start") {
-                jump(); // Auto start the game
+                jump();
               }
             }}
             className={`px-4 py-2 backdrop-blur-md text-white font-mono text-xs rounded-lg border transition-all pointer-events-auto shadow-lg ${autoPlay ? 'bg-green-500/50 border-green-400' : 'bg-black/50 hover:bg-black/80 border-white/20'}`}
