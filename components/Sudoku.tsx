@@ -99,9 +99,9 @@ export default function Sudoku() {
   const content = dict[language].game
 
   const [levelIndex, setLevelIndex] = useState(0)
-  const [board, setBoard] = useState<number[][]>([])
-  const [initialBoard, setInitialBoard] = useState<number[][]>([])
-  const [solutionBoard, setSolutionBoard] = useState<number[][]>([])
+  const [board, setBoard] = useState<number[][]>(() => LEVELS[0].board.map(row => [...row]))
+  const [initialBoard, setInitialBoard] = useState<number[][]>(() => LEVELS[0].board.map(row => [...row]))
+  const [solutionBoard, setSolutionBoard] = useState<number[][]>(() => solveSudoku(LEVELS[0].board))
   
   const [selectedCell, setSelectedCell] = useState<Position>(null)
   const [strikes, setStrikes] = useState(0)
@@ -115,6 +115,7 @@ export default function Sudoku() {
 
   // Initialize board on level change
   useEffect(() => {
+    if (levelIndex === 0 && board.length > 0) return // Skip first run since already initialized
     const currentLevel = LEVELS[levelIndex % LEVELS.length]
     const copiedBoard = currentLevel.board.map(row => [...row])
     setBoard(copiedBoard)
@@ -201,10 +202,11 @@ export default function Sudoku() {
     : 0
 
   const getNumberCount = (num: number) => {
+    if (!board || board.length === 0) return 0
     let count = 0
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
-        if (board[r][c] === num) count++
+        if (board[r] && board[r][c] === num) count++
       }
     }
     return count
