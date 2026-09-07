@@ -3,7 +3,7 @@ import "./globals.css"
 import { LanguageProvider } from "@/components/LanguageContext"
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://wildanjaelani.vercel.app"),
+  metadataBase: new URL("https://portfolio-wildan.vercel.app"),
   title: {
     default: "Wildan Jaelani — Front-End Developer",
     template: "%s | Wildan Jaelani",
