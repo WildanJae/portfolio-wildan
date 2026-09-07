@@ -9,9 +9,11 @@ export default function LanguageSwitcher() {
   return (
     <button
       onClick={toggleLanguage}
-      className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border-dark bg-primary-dark hover:bg-border-dark/50 transition-colors text-sm font-medium text-text-muted hover:text-white"
+      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded border border-border-subtle bg-surface/70 hover:bg-surface hover:border-border-strong transition-colors text-xs font-mono font-semibold text-foreground"
+      aria-label="Toggle language"
+      title={language === "id" ? "Ganti ke Bahasa Inggris" : "Switch to Indonesian"}
     >
-      <Globe size={14} className="text-accent" />
+      <Globe size={13} className="text-accent" />
       <span className="uppercase">{language}</span>
     </button>
   );
