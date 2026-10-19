@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import "./globals.css"
 import { LanguageProvider } from "@/components/LanguageContext"
+import { ToastProvider } from "@/components/ToastContext"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://portfolio-wildan.vercel.app"),
@@ -39,7 +40,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/wildan2.jpg",
+        url: "/wildan2.png",
         width: 1200,
         height: 630,
         alt: "Wildan Jaelani, Front-End Developer",
@@ -50,7 +51,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Wildan Jaelani — Front-End Developer",
     description: "Front-End Developer specializing in Next.js, React, Angular, and TypeScript based in Bandung, Indonesia.",
-    images: ["/wildan2.jpg"],
+    images: ["/wildan2.png"],
   },
   icons: {
     icon: "/icon.svg",
@@ -65,7 +66,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="id" className="scroll-smooth">
       <body className="bg-background text-foreground antialiased selection:bg-accent selection:text-white min-h-screen flex flex-col">
         <LanguageProvider>
-          {children}
+          <ToastProvider>
+            {children}
+          </ToastProvider>
         </LanguageProvider>
       </body>
     </html>
